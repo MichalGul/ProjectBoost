@@ -25,6 +25,8 @@ public class Rocket : MonoBehaviour {
     public ParticleSystem deathSoundParticles;
     public ParticleSystem loadLevelParticles;
 
+    [SerializeField] public float levelLoadDelay = 2f;
+
     enum State
     {
         Alive,
@@ -128,7 +130,7 @@ public class Rocket : MonoBehaviour {
         audiosourceComponent.PlayOneShot(deathSound);
         deathSoundParticles.Play();
         print("Your ass is dead!");
-        Invoke("RestartGame", 1f);
+        Invoke("RestartGame", levelLoadDelay);
     }
 
     private void StartSuccesSequence()
@@ -137,7 +139,7 @@ public class Rocket : MonoBehaviour {
         audiosourceComponent.Stop();
         audiosourceComponent.PlayOneShot(loadLevel);
         loadLevelParticles.Play();
-        Invoke("LoadnextScene", 2f);
+        Invoke("LoadnextScene", levelLoadDelay);
     }
 
     private void RestartGame()
