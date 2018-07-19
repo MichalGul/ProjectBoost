@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour {
     //todo fix lightningh bug
-    Rigidbody rigidbodyComponent;
+    public Rigidbody rigidbodyComponent;
     AudioSource audiosourceComponent;
 
 
@@ -27,6 +27,12 @@ public class Rocket : MonoBehaviour {
 
     [SerializeField] public float levelLoadDelay = 2f;
 
+    public int levelNumver;
+    private bool collisionsDisabled = false;
+
+    public GameManager gameManager;
+
+
     enum State
     {
         Alive,
@@ -42,8 +48,10 @@ public class Rocket : MonoBehaviour {
         //referencja do komponentu rigidbody przypietego to tego game objectu do ktorego jest przyczepiony skrypt
         rigidbodyComponent = GetComponent<Rigidbody>();
         audiosourceComponent = GetComponent<AudioSource>();
+        gameManager = FindObjectOfType<GameManager>();
         //audiosourceComponent.PlayOneShot(loadLevel);
-	}
+        
+    }
 	
 	// Update is called once per frame
 	void Update ()
@@ -52,6 +60,19 @@ public class Rocket : MonoBehaviour {
         {
             RespondToRotateInput();
             RespondToThrustInput();
+            if (Debug.isDebugBuild) { RespondToDebugKey(); }
+            
+        }
+
+        
+
+    }
+
+    private void RespondToDebugKey()
+    {
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            collisionsDisabled = !collisionsDisabled;
         }
     }
 
@@ -106,7 +127,7 @@ public class Rocket : MonoBehaviour {
 
     void OnCollisionEnter(Collision other)
     {
-        if (state != State.Alive) { return; }
+        if (state != State.Alive || collisionsDisabled) { return; }
 
         switch (other.gameObject.tag)
         {
@@ -144,11 +165,11 @@ public class Rocket : MonoBehaviour {
 
     private void RestartGame()
     {
-        SceneManager.LoadScene(0);
+        gameManager.RestartGame();
     }
 
     private void LoadnextScene()
     {
-        SceneManager.LoadScene(1); // Allow for more than nex levels
+        gameManager.LoadNextLevel();
     }
 }
